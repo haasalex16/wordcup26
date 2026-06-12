@@ -34,7 +34,8 @@ function sides(m: Match): Side[] {
 }
 
 /** Points one team earned from one match. Live matches count goals
- *  provisionally; win/draw/clean-sheet points only once finished. */
+ *  provisionally; win/draw/clean-sheet points only once finished.
+ *  Group-finish bonuses are handled separately (see groupBonuses). */
 export function teamMatchPoints(m: Match, team: string): number {
   const side = sides(m).find((s) => s.team === team);
   if (!side || !hasStarted(m)) return 0;
@@ -57,6 +58,45 @@ export function teamMatchPoints(m: Match, team: string): number {
   return pts;
 }
 
+/** Bonus points per team for their final group position: 2 for 1st,
+ *  1 for 2nd. Only awarded once every match in that group is finished,
+ *  since standings (and tiebreakers) can still shift while games remain. */
+export function groupBonuses(matches: Match[]): Map<string, number> {
+  const bonus = new Map<string, number>();
+  const groups = new Map<string, Match[]>();
+  for (const m of matches) {
+    if (m.stage !== "group" || !m.group_name) continue;
+    (groups.get(m.group_name) ?? groups.set(m.group_name, []).get(m.group_name)!).push(m);
+  }
+
+  for (const [, ms] of groups) {
+    if (!ms.every((m) => m.finished)) continue; // group not yet decided
+
+    type Standing = { team: string; pts: number; gd: number; gf: number };
+    const table = new Map<string, Standing>();
+    const row = (team: string) =>
+      table.get(team) ?? table.set(team, { team, pts: 0, gd: 0, gf: 0 }).get(team)!;
+
+    for (const m of ms) {
+      for (const s of sides(m)) {
+        const r = row(s.team);
+        r.gf += s.gf;
+        r.gd += s.gf - s.ga;
+        if (s.gf > s.ga) r.pts += 3;
+        else if (s.gf === s.ga) r.pts += 1;
+      }
+    }
+
+    const ranked = [...table.values()].sort(
+      (a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf
+    );
+    if (ranked[0]) bonus.set(ranked[0].team, SCORING.groupFirst);
+    if (ranked[1]) bonus.set(ranked[1].team, SCORING.groupSecond);
+  }
+
+  return bonus;
+}
+
 export type TeamLine = { team: string; points: number; played: number; live: boolean };
 export type PlayerLine = { player: string; points: number; teams: TeamLine[] };
 
@@ -74,6 +114,11 @@ export function computeLeaderboard(matches: Match[]): PlayerLine[] {
       if (m.finished) line.played += 1;
       if (isLive(m)) line.live = true;
     }
+  }
+
+  for (const [team, pts] of groupBonuses(matches)) {
+    const line = byTeam.get(team);
+    if (line) line.points += pts;
   }
 
   return Object.entries(ROSTERS)

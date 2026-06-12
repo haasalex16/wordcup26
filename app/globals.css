@@ -120,8 +120,18 @@ summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
   font-size: 19px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  flex: 1;
 }
+
+/* Roster preview: the player's drafted flags, sitting beside the name
+   and taking the slack so the score stays right-aligned. */
+.flags {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  font-size: 18px;
+  line-height: 1;
+}
+.squad .flag { font-size: 15px; margin-right: 2px; }
 
 .pts {
   font-family: "Oswald", sans-serif;

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { LEAGUE_NAME } from "@/lib/config";
+import { flag } from "@/lib/flags";
 import { computeLeaderboard, isLive, teamMatchPoints, type Match } from "@/lib/scoring";
 
 const supabase = createClient(
@@ -49,7 +50,7 @@ export default function Home() {
   return (
     <main>
       <header className="masthead">
-        <p className="eyebrow">World Cup 2026 · Team Draft League</p>
+        <p className="eyebrow">Team Draft League</p>
         <h1>{LEAGUE_NAME}</h1>
         {anyLive && <p className="live-flag"><span className="dot" /> Matches in play — scores update live</p>}
       </header>
@@ -70,13 +71,18 @@ export default function Home() {
                     <summary>
                       <span className="rank">{i + 1}</span>
                       <span className="name">{p.player}</span>
+                      <span className="flags" aria-hidden="true">
+                        {p.teams.map((t) => (
+                          <span key={t.team} title={t.team}>{flag(t.team)}</span>
+                        ))}
+                      </span>
                       {p.teams.some((t) => t.live) && <span className="dot" title="A drafted team is playing now" />}
                       <span className="pts">{p.points}</span>
                     </summary>
                     <ul className="squad">
                       {p.teams.map((t) => (
                         <li key={t.team}>
-                          <span>{t.team}</span>
+                          <span><span className="flag" aria-hidden="true">{flag(t.team)}</span> {t.team}</span>
                           <span className="meta">{t.played} played{t.live ? " · live" : ""}</span>
                           <span className="pts small">{t.points}</span>
                         </li>
@@ -105,7 +111,7 @@ export default function Home() {
       )}
 
       <footer>
-        Scores via worldcup26.ir · goals 1 · group win 3 / draw 1 · clean sheet 1 · knockout wins escalate to 15 for the final
+        Scores via worldcup26.ir · win 3 · tie 1 · goal 1 · shutout 1 · group finish 2/1
       </footer>
     </main>
   );

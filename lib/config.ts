@@ -2,51 +2,45 @@
 // LEAGUE CONFIG — this is the only file you need to edit.
 // ============================================================
 //
-// Team names must EXACTLY match the API's English team names.
-// After deploying, open /api/teams to see the exact current
-// names (playoff placeholders like "UEFA Path A Winner" get
-// replaced with real countries as the data source updates).
+// All team names verified against the live feed (June 12 2026).
+// Scoring: 3 per win, 1 per tie, 1 per goal, 1 per shutout — every
+// stage, no knockout escalation. Plus group-finish bonus: 2 for
+// finishing 1st in the group, 1 for 2nd (awarded once the group's
+// matches are all finished).
 
-export const LEAGUE_NAME = "The Haastradamus Invitational";
+export const LEAGUE_NAME = "World Cup 2026";
 
-// Who drafted which countries. Edit freely, redeploy to apply.
 export const ROSTERS: Record<string, string[]> = {
-  Alex: ["Brazil", "England", "Mexico", "Senegal"],
-  "Friend 2": ["France", "United States", "Japan", "Egypt"],
-  "Friend 3": ["Argentina", "Germany", "Morocco", "Canada"],
-  "Friend 4": ["Spain", "Portugal", "Uruguay", "South Korea"],
-  "Friend 5": ["Netherlands", "Belgium", "Colombia", "Australia"],
-  "Friend 6": ["Croatia", "Switzerland", "Ecuador", "Iran"],
+  Murphy: ["Mexico", "Czech Republic", "Germany", "Jordan"],
+  Goose: ["South Africa", "Brazil", "Algeria", "Croatia"],
+  Scott: ["South Korea", "Haiti", "Sweden", "France"],
+  Haas: ["Canada", "Iraq", "Portugal", "Ghana"],
+  Eric: ["Bosnia and Herzegovina", "United States", "Uruguay", "Democratic Republic of the Congo"],
+  Spencer: ["Qatar", "Australia", "Japan", "Argentina"],
+  Brent: ["Switzerland", "Belgium", "Iran", "Uzbekistan"],
+  Dan: ["Morocco", "Tunisia", "Colombia", "Panama"],
+  Aaron: ["Scotland", "Turkey", "New Zealand", "Norway"],
+  Tommy: ["Paraguay", "Netherlands", "Saudi Arabia", "Senegal"],
+  Jason: ["Curaçao", "Egypt", "Spain", "Austria"],
+  Tyler: ["Ivory Coast", "Ecuador", "Cape Verde", "England"],
 };
 
 // Points awarded to a drafted team, per match.
 export const SCORING = {
-  goal: 1, // every goal scored, any stage
+  goal: 1, // each goal scored
   groupWin: 3,
   groupDraw: 1,
   cleanSheet: 1, // finished match, conceded zero
-  // Winning a knockout match (escalates by round):
+  // Bonus for final group position (awarded once the group is complete):
+  groupFirst: 2,
+  groupSecond: 1,
+  // Knockout wins are worth the same 3 as any other win:
   knockoutWin: {
-    r32: 4,
-    r16: 6,
-    qf: 8,
-    sf: 10,
-    third: 4, // third-place playoff
-    final: 15, // lifting the trophy
+    r32: 3,
+    r16: 3,
+    qf: 3,
+    sf: 3,
+    third: 3,
+    final: 3,
   } as Record<string, number>,
 };
-
-// All 48 group slots for reference while drafting (from the data
-// source — placeholder slots resolve to real countries in the API):
-// A: Mexico, South Africa, South Korea, UEFA Path D Winner
-// B: Canada, Qatar, Switzerland, UEFA Path A Winner
-// C: Brazil, Haiti, Morocco, Scotland
-// D: Australia, Paraguay, UEFA Path C Winner, United States
-// E: Curaçao, Ecuador, Germany, Ivory Coast
-// F: Japan, Netherlands, Tunisia, UEFA Path B Winner
-// G: Belgium, Egypt, Iran, New Zealand
-// H: Cape Verde, Saudi Arabia, Spain, Uruguay
-// I: France, IC Path 2 Winner, Norway, Senegal
-// J: Algeria, Argentina, Austria, Jordan
-// K: Colombia, IC Path 1 Winner, Portugal, Uzbekistan
-// L: Croatia, England, Ghana, Panama

@@ -50,14 +50,11 @@ Vercel's free plan only allows daily crons, so use cron-job.org (free):
 
 | Event | Points |
 |---|---|
-| Goal scored (any stage) | 1 |
-| Group-stage win / draw | 3 / 1 |
-| Clean sheet | 1 |
-| Knockout win: R32 → R16 → QF → SF | 4 → 6 → 8 → 10 |
-| Third-place playoff win | 4 |
-| Winning the final | 15 |
+| Win (any stage) | 3 |
+| Tie | 1 |
+| Shutout (clean sheet) | 1 |
 
-Goals count live as they happen; result-based points land at full time.
+Points land at full time; nothing accrues mid-match.
 
 ## Local dev
 
@@ -72,7 +69,3 @@ npm run dev
 - The score source is a free community project — solid, but uptime isn't guaranteed. `/api/sync` fails loudly (502) if it's down; nothing breaks, scores just pause. If it dies mid-tournament, the sync route is the only file to swap for another provider (football-data.org is the natural fallback).
 - Fully public means anyone with the link sees everything; rosters live in code, so nobody can tamper with picks without a deploy. That's the honor system working in your favor.
 - Knockout draws: the feed reports the deciding score, so the winner check covers extra time/penalty outcomes.
-
-
-SB
-Mw5gsC8mP8ueXyp5
