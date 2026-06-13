@@ -123,10 +123,13 @@ summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
 }
 
 /* Roster preview: the player's drafted flags, sitting beside the name
-   and taking the slack so the score stays right-aligned. */
+   and taking the slack so the score stays right-aligned. Wraps rather
+   than overflowing on narrow screens (El Idiots squads carry 8 flags). */
 .flags {
   flex: 1;
+  min-width: 0;
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   font-size: 18px;
   line-height: 1;
@@ -140,6 +143,14 @@ summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
   font-variant-numeric: tabular-nums;
 }
 .pts.small { font-size: 16px; }
+
+/* Goals for:against — the El Idiots tiebreaker, shown beside the score. */
+.gd {
+  font-family: "Oswald", sans-serif;
+  font-size: 14px;
+  color: var(--chalk-dim);
+  font-variant-numeric: tabular-nums;
+}
 
 .squad {
   list-style: none;
@@ -228,4 +239,27 @@ footer {
   text-align: center;
   font-size: 12px;
   color: var(--chalk-dim);
+}
+
+/* ---- mobile (most traffic) ---- */
+@media (max-width: 480px) {
+  main { padding: 28px 12px 48px; }
+  .masthead { margin-bottom: 28px; }
+
+  summary { gap: 8px; padding: 12px 12px; }
+  .rank { font-size: 18px; min-width: 1.2em; }
+  .name { font-size: 16px; letter-spacing: 0.02em; }
+  .flags { font-size: 15px; gap: 3px; }
+  .pts { font-size: 22px; }
+  .gd { font-size: 12px; }
+
+  .squad { padding: 4px 12px 12px 40px; }
+  .squad li { gap: 8px; }
+  .squad .flag { font-size: 13px; }
+
+  .match { padding: 10px 12px; gap: 2px 8px; }
+  .match .team { font-size: 13px; }
+  .match .score { font-size: 19px; }
+
+  footer { margin-top: 40px; }
 }

@@ -1,10 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { LEAGUE_NAME } from "@/lib/config";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: LEAGUE_NAME,
   description: "World Cup 2026 fantasy league — live scores and standings",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

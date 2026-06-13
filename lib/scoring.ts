@@ -23,9 +23,9 @@ export const isLive = (m: Match) =>
 
 export const hasStarted = (m: Match) => m.finished || isLive(m);
 
-type Side = { team: string; gf: number; ga: number };
+export type Side = { team: string; gf: number; ga: number };
 
-function sides(m: Match): Side[] {
+export function sides(m: Match): Side[] {
   if (!m.home_team || !m.away_team || m.home_score === null || m.away_score === null) return [];
   return [
     { team: m.home_team, gf: m.home_score, ga: m.away_score },

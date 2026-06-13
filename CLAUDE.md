@@ -1,6 +1,8 @@
 # World Cup 2026 Fantasy League
 
-Public (zero-auth) fantasy site for a 12-person friend league. Friends own drafted countries; countries earn points from real match results.
+Public (zero-auth) fantasy site. Friends own drafted countries; countries earn points from real match results. Two independent leagues share the same `matches` data:
+- **World Cup 2026** (`/`, the original) — 12 players, 4 teams each.
+- **El Idiots** (`/el-idiots`) — 11 players, 8 teams each, simpler scoring. The two pages don't link to each other; each league gets its URL shared directly.
 
 ## Architecture
 
@@ -13,8 +15,9 @@ Public (zero-auth) fantasy site for a 12-person friend league. Friends own draft
 
 ## Key files
 
-- `lib/config.ts` — rosters and scoring values. The only file that changes routinely. Team names MUST exactly match feed names (verify via `/api/teams`).
-- `lib/scoring.ts` — pure scoring functions. Knockout draws never award tie points (feed reports the deciding score).
+- `lib/config.ts` — World Cup 2026 rosters + scoring values. The only file that changes routinely. Team names MUST exactly match feed names (verify via `/api/teams`).
+- `lib/scoring.ts` — pure scoring functions for the main league. Knockout draws never award tie points (feed reports the deciding score). Exports `sides`/`isLive`/`hasStarted`, reused by El Idiots.
+- `lib/elIdiots.ts` — El Idiots config + scoring, self-contained. Rosters use feed-spelled names (normalised from the draft sheet). Win 3 / tie 1 / loss 0 flat; shootout win = 3; no goal/clean-sheet/group bonuses; ranking ties broken by goals for, then goals against.
 - `app/api/sync/route.ts` — feed fetch + upsert. If the feed dies, this is the only file to swap for another provider (football-data.org is the fallback).
 
 ## Scoring rules (current)
