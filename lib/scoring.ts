@@ -100,9 +100,12 @@ export function groupBonuses(matches: Match[]): Map<string, number> {
 export type TeamLine = { team: string; points: number; played: number; live: boolean };
 export type PlayerLine = { player: string; points: number; teams: TeamLine[] };
 
-export function computeLeaderboard(matches: Match[]): PlayerLine[] {
+export function computeLeaderboard(
+  matches: Match[],
+  rosters: Record<string, string[]> = ROSTERS
+): PlayerLine[] {
   const byTeam = new Map<string, TeamLine>();
-  const allTeams = new Set(Object.values(ROSTERS).flat());
+  const allTeams = new Set(Object.values(rosters).flat());
 
   for (const team of allTeams) byTeam.set(team, { team, points: 0, played: 0, live: false });
 
@@ -121,7 +124,7 @@ export function computeLeaderboard(matches: Match[]): PlayerLine[] {
     if (line) line.points += pts;
   }
 
-  return Object.entries(ROSTERS)
+  return Object.entries(rosters)
     .map(([player, teams]) => {
       const lines = teams.map((t) => byTeam.get(t)!).filter(Boolean);
       return {

@@ -1,8 +1,11 @@
 # World Cup 2026 Fantasy League
 
-Public (zero-auth) fantasy site. Friends own drafted countries; countries earn points from real match results. Two independent leagues share the same `matches` data:
+Public (zero-auth) fantasy site. Friends own drafted countries; countries earn points from real match results. Three independent leagues share the same `matches` data:
 - **World Cup 2026** (`/`, the original) — 12 players, 4 teams each.
-- **El Idiots** (`/el-idiots`) — 11 players, 8 teams each, simpler scoring. The two pages don't link to each other; each league gets its URL shared directly.
+- **El Idiots** (`/el-idiots`) — 11 players, 8 teams each, simpler scoring (win/tie/loss only).
+- **Group Stage Showdown** (`/tyler`) — 4 players, each owns 1 team per group (12 teams). Same scoring as the main league, plus a group-battle UI since every group is a 4-way duel. Currently on placeholder picks (`lib/tyler.ts`) until the real draft.
+
+The pages don't link to each other; each league's URL is shared directly.
 
 ## Architecture
 
@@ -18,6 +21,7 @@ Public (zero-auth) fantasy site. Friends own drafted countries; countries earn p
 - `lib/config.ts` — World Cup 2026 rosters + scoring values. The only file that changes routinely. Team names MUST exactly match feed names (verify via `/api/teams`).
 - `lib/scoring.ts` — pure scoring functions for the main league. Knockout draws never award tie points (feed reports the deciding score). Exports `sides`/`isLive`/`hasStarted`, reused by El Idiots.
 - `lib/elIdiots.ts` — El Idiots config + scoring, self-contained. Rosters use feed-spelled names (normalised from the draft sheet). Win 3 / tie 1 / loss 0 flat; shootout win = 3; no goal/clean-sheet/group bonuses; ranking ties broken by goals for, then goals against.
+- `lib/tyler.ts` — Group Stage Showdown config. PLACEHOLDER players/groups/picks — edit `TYLER_PLAYERS` + `TYLER_GROUPS` (rosters derive from them). Reuses `computeLeaderboard(matches, TYLER_ROSTERS)`; adds `computeGroupBattles`/`computeGroupsLed` for the per-group duel view.
 - `app/api/sync/route.ts` — feed fetch + upsert. If the feed dies, this is the only file to swap for another provider (football-data.org is the fallback).
 
 ## Scoring rules (current)

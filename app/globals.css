@@ -168,6 +168,104 @@ summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
 .squad li:first-child { border-top: none; }
 .squad .meta { flex: 1; text-align: right; color: var(--chalk-dim); font-size: 12px; }
 
+/* ---- player colour swatch (Tyler league) ---- */
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+  display: inline-block;
+}
+
+/* ---- Group Cup tally (Tyler league) ---- */
+.cup {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.cup li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--slat);
+  border: 1px solid var(--slat-edge);
+  border-radius: 6px;
+}
+.cup .name { flex: 1; font-size: 16px; }
+.cup-count {
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+}
+.cup-count small { font-size: 12px; color: var(--chalk-dim); font-weight: 500; }
+
+/* ---- group battle cards (Tyler league) ---- */
+.groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+.group-card {
+  background: var(--slat);
+  border: 1px solid var(--slat-edge);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.group-card h3 {
+  font-family: "Oswald", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 13px;
+  color: var(--chalk-dim);
+  margin: 0 0 8px;
+}
+.group-card ol { list-style: none; margin: 0; padding: 0; }
+.group-card li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+}
+.group-card li:first-child { border-top: none; }
+.group-card li.leading { color: var(--gold); }
+.group-card .pos {
+  width: 1.4em;
+  text-align: center;
+  font-size: 13px;
+  color: var(--chalk-dim);
+  font-variant-numeric: tabular-nums;
+}
+.group-card li.leading .pos { color: inherit; }
+.group-card .gflag { font-size: 16px; flex: none; }
+.group-card .gteam {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  font-size: 14px;
+}
+.group-card .gteam em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.group-card .gpts {
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---- matches ---- */
 .match {
   display: grid;
@@ -260,6 +358,11 @@ footer {
   .match { padding: 10px 12px; gap: 2px 8px; }
   .match .team { font-size: 13px; }
   .match .score { font-size: 19px; }
+
+  /* Tyler league: one group card per row, tighter cup tally. */
+  .groups { grid-template-columns: 1fr; gap: 10px; }
+  .cup { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cup li { padding: 10px 12px; }
 
   footer { margin-top: 40px; }
 }
