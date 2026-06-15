@@ -5,12 +5,12 @@ import { createClient } from "@supabase/supabase-js";
 import { flag } from "@/lib/flags";
 import { computeLeaderboard, isLive, teamMatchPoints, type Match } from "@/lib/scoring";
 import {
-  TYLER_LEAGUE_NAME,
-  TYLER_ROSTERS,
-  TYLER_PLAYER_COLORS,
+  BC_BOYS_LEAGUE_NAME,
+  BC_BOYS_ROSTERS,
+  BC_BOYS_PLAYER_COLORS,
   computeGroupBattles,
   computeGroupsLed,
-} from "@/lib/tyler";
+} from "@/lib/bcBoys";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,9 +22,9 @@ const STAGE_LABEL: Record<string, string> = {
   qf: "Quarterfinal", sf: "Semifinal", third: "3rd Place", final: "Final",
 };
 
-const color = (player: string) => TYLER_PLAYER_COLORS[player] ?? "var(--chalk)";
+const color = (player: string) => BC_BOYS_PLAYER_COLORS[player] ?? "var(--chalk)";
 
-export default function Tyler() {
+export default function BcBoys() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -37,7 +37,7 @@ export default function Tyler() {
     load();
 
     const channel = supabase
-      .channel("matches-live-tyler")
+      .channel("matches-live-bc-boys")
       .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, load)
       .subscribe();
 
@@ -48,8 +48,8 @@ export default function Tyler() {
     };
   }, []);
 
-  const leaderboard = useMemo(() => computeLeaderboard(matches, TYLER_ROSTERS), [matches]);
-  const battles = useMemo(() => computeGroupBattles(leaderboard), [leaderboard]);
+  const leaderboard = useMemo(() => computeLeaderboard(matches, BC_BOYS_ROSTERS), [matches]);
+  const battles = useMemo(() => computeGroupBattles(leaderboard, matches), [leaderboard, matches]);
   const groupsLed = useMemo(() => computeGroupsLed(battles), [battles]);
   const live = matches.filter(isLive);
   const finished = matches.filter((m) => m.finished).sort((a, b) => b.id - a.id).slice(0, 8);
@@ -59,7 +59,7 @@ export default function Tyler() {
     <main>
       <header className="masthead">
         <p className="eyebrow">Group Draft · 1 team per group</p>
-        <h1>{TYLER_LEAGUE_NAME}</h1>
+        <h1>{BC_BOYS_LEAGUE_NAME}</h1>
         {anyLive && <p className="live-flag"><span className="dot" /> Matches in play — scores update live</p>}
       </header>
 
@@ -111,7 +111,7 @@ export default function Tyler() {
                 <li key={g.player}>
                   <span className="swatch" style={{ background: color(g.player) }} aria-hidden="true" />
                   <span className="name">{g.player}</span>
-                  <span className="cup-count">{g.groups}<small>/12</small></span>
+                  <span className="cup-count">{g.groups}<small>/{battles.length}</small></span>
                 </li>
               ))}
             </ol>
@@ -162,7 +162,7 @@ export default function Tyler() {
       )}
 
       <footer>
-        Scores via worldcup26.ir · win 3 · tie 1 · goal 1 · shutout 1 · group finish 2/1 · placeholder picks
+        Scores via worldcup26.ir · win 3 · tie 1 · goal 1 · shutout 1 · group finish 2/1
       </footer>
     </main>
   );
