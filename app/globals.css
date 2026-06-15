@@ -168,7 +168,7 @@ summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
 .squad li:first-child { border-top: none; }
 .squad .meta { flex: 1; text-align: right; color: var(--chalk-dim); font-size: 12px; }
 
-/* ---- player colour swatch (Tyler league) ---- */
+/* ---- player colour swatch (BC Boys league) ---- */
 .swatch {
   width: 10px;
   height: 10px;
@@ -177,34 +177,7 @@ summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
   display: inline-block;
 }
 
-/* ---- Group Cup tally (Tyler league) ---- */
-.cup {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
-}
-.cup li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  background: var(--slat);
-  border: 1px solid var(--slat-edge);
-  border-radius: 6px;
-}
-.cup .name { flex: 1; font-size: 16px; }
-.cup-count {
-  font-family: "Oswald", sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  font-variant-numeric: tabular-nums;
-}
-.cup-count small { font-size: 12px; color: var(--chalk-dim); font-weight: 500; }
-
-/* ---- group battle cards (Tyler league) ---- */
+/* ---- group battle cards (BC Boys league) ---- */
 .groups {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -359,10 +332,8 @@ footer {
   .match .team { font-size: 13px; }
   .match .score { font-size: 19px; }
 
-  /* Tyler league: one group card per row, tighter cup tally. */
+  /* BC Boys: one group card per row. */
   .groups { grid-template-columns: 1fr; gap: 10px; }
-  .cup { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .cup li { padding: 10px 12px; }
 
   footer { margin-top: 40px; }
 }

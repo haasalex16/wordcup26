@@ -84,13 +84,3 @@ export function computeGroupBattles(board: PlayerLine[], matches: Match[]): Grou
     return { group, rows, leaders };
   });
 }
-
-/** How many groups each player currently leads (ties count for everyone
- *  tied). Returned sorted, most groups first — the meta-competition. */
-export function computeGroupsLed(battles: GroupBattle[]): { player: string; groups: number }[] {
-  const led = new Map<string, number>(Object.keys(BC_BOYS_ROSTERS).map((p) => [p, 0]));
-  for (const b of battles) for (const leader of b.leaders) led.set(leader, (led.get(leader) ?? 0) + 1);
-  return [...led.entries()]
-    .map(([player, groups]) => ({ player, groups }))
-    .sort((a, b) => b.groups - a.groups);
-}

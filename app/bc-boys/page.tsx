@@ -9,7 +9,6 @@ import {
   BC_BOYS_ROSTERS,
   BC_BOYS_PLAYER_COLORS,
   computeGroupBattles,
-  computeGroupsLed,
 } from "@/lib/bcBoys";
 
 const supabase = createClient(
@@ -50,7 +49,6 @@ export default function BcBoys() {
 
   const leaderboard = useMemo(() => computeLeaderboard(matches, BC_BOYS_ROSTERS), [matches]);
   const battles = useMemo(() => computeGroupBattles(leaderboard, matches), [leaderboard, matches]);
-  const groupsLed = useMemo(() => computeGroupsLed(battles), [battles]);
   const live = matches.filter(isLive);
   const finished = matches.filter((m) => m.finished).sort((a, b) => b.id - a.id).slice(0, 8);
   const anyLive = live.length > 0;
@@ -104,19 +102,6 @@ export default function BcBoys() {
           </section>
 
           {/* Fun layer: every group is a 4-way duel between the league. */}
-          <section aria-label="Groups led">
-            <h2>Group Cup — groups led</h2>
-            <ol className="cup">
-              {groupsLed.map((g) => (
-                <li key={g.player}>
-                  <span className="swatch" style={{ background: color(g.player) }} aria-hidden="true" />
-                  <span className="name">{g.player}</span>
-                  <span className="cup-count">{g.groups}<small>/{battles.length}</small></span>
-                </li>
-              ))}
-            </ol>
-          </section>
-
           <section aria-label="Group battles">
             <h2>Group battles</h2>
             <div className="groups">
