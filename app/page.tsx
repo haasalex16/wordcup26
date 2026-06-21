@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { LEAGUE_NAME } from "@/lib/config";
 import { flag } from "@/lib/flags";
-import { computeLeaderboard, isLive, teamMatchPoints, type Match } from "@/lib/scoring";
+import { computeLeaderboard, isLive, syncAgeLabel, teamMatchPoints, type Match } from "@/lib/scoring";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -43,6 +43,7 @@ export default function Home() {
   }, []);
 
   const leaderboard = useMemo(() => computeLeaderboard(matches), [matches]);
+  const syncLabel = syncAgeLabel(matches);
   const live = matches.filter(isLive);
   const finished = matches.filter((m) => m.finished).sort((a, b) => b.id - a.id).slice(0, 8);
   const anyLive = live.length > 0;
@@ -111,6 +112,7 @@ export default function Home() {
       )}
 
       <footer>
+        {syncLabel && <><span className="sync-age">{syncLabel}</span> · </>}
         Scores via worldcup26.ir · win 3 · tie 1 · goal 1 · shutout 1 · group finish 2/1
       </footer>
     </main>

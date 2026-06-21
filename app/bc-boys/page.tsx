@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { flag } from "@/lib/flags";
-import { computeLeaderboard, isLive, teamMatchPoints, type Match } from "@/lib/scoring";
+import { computeLeaderboard, isLive, syncAgeLabel, teamMatchPoints, type Match } from "@/lib/scoring";
 import {
   BC_BOYS_LEAGUE_NAME,
   BC_BOYS_ROSTERS,
@@ -49,6 +49,7 @@ export default function BcBoys() {
 
   const leaderboard = useMemo(() => computeLeaderboard(matches, BC_BOYS_ROSTERS), [matches]);
   const battles = useMemo(() => computeGroupBattles(leaderboard, matches), [leaderboard, matches]);
+  const syncLabel = syncAgeLabel(matches);
   const live = matches.filter(isLive);
   const finished = matches.filter((m) => m.finished).sort((a, b) => b.id - a.id).slice(0, 8);
   const anyLive = live.length > 0;
@@ -147,6 +148,7 @@ export default function BcBoys() {
       )}
 
       <footer>
+        {syncLabel && <><span className="sync-age">{syncLabel}</span> · </>}
         Scores via worldcup26.ir · win 3 · tie 1 · goal 1 · shutout 1 · group finish 2/1
       </footer>
     </main>

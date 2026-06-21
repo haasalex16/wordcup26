@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { flag } from "@/lib/flags";
-import { isLive, type Match } from "@/lib/scoring";
+import { isLive, syncAgeLabel, type Match } from "@/lib/scoring";
 import { EL_IDIOTS_NAME, computeEiLeaderboard, eiTeamMatchPoints } from "@/lib/elIdiots";
 
 const supabase = createClient(
@@ -43,6 +43,7 @@ export default function ElIdiots() {
   }, []);
 
   const leaderboard = useMemo(() => computeEiLeaderboard(matches), [matches]);
+  const syncLabel = syncAgeLabel(matches);
   const live = matches.filter(isLive);
   const finished = matches.filter((m) => m.finished).sort((a, b) => b.id - a.id).slice(0, 8);
   const anyLive = live.length > 0;
@@ -114,6 +115,7 @@ export default function ElIdiots() {
       )}
 
       <footer>
+        {syncLabel && <><span className="sync-age">{syncLabel}</span> · </>}
         Scores via worldcup26.ir · win 3 · tie 1 · loss 0 — all stages · ties broken by goals for, then against
       </footer>
     </main>

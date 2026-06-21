@@ -1,8 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60; // upstream feed is slow (~15-20s) and flaky
 
 const SOURCE = "https://worldcup26.ir/get/games";
+
+// The feed (worldcup26.ir) intermittently 502s / times out. Each cron tick
+// retries a few times so one flaky response doesn't skip a whole sync cycle.
+const FETCH_ATTEMPTS = 3;
+const FETCH_TIMEOUT_MS = 18_000;
 
 type ApiGame = {
   id: string;
@@ -37,18 +43,34 @@ export async function GET(req: Request) {
   }
 
   let games: ApiGame[];
-  try {
-    const res = await fetch(SOURCE, { cache: "no-store" });
-    if (!res.ok) throw new Error(`source responded ${res.status}`);
-    const body = await res.json();
-    games = body.games ?? body;
-    if (!Array.isArray(games) || games.length === 0) throw new Error("empty payload");
-  } catch (err) {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= FETCH_ATTEMPTS; attempt++) {
+    try {
+      const res = await fetch(SOURCE, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+      if (!res.ok) throw new Error(`source responded ${res.status}`);
+      const body = await res.json();
+      const parsed = body.games ?? body;
+      if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("empty payload");
+      games = parsed;
+      lastErr = undefined;
+      break;
+    } catch (err) {
+      lastErr = err;
+      if (attempt < FETCH_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, 1000 * attempt)); // 1s, then 2s backoff
+      }
+    }
+  }
+  if (lastErr !== undefined) {
     return Response.json(
-      { error: "score source unavailable", detail: String(err) },
+      { error: "score source unavailable", detail: String(lastErr), attempts: FETCH_ATTEMPTS },
       { status: 502 }
     );
   }
+  games = games!;
 
   const rows = games.map((g) => ({
     id: toInt(g.id),

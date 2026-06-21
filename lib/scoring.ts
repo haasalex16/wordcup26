@@ -23,6 +23,26 @@ export const isLive = (m: Match) =>
 
 export const hasStarted = (m: Match) => m.finished || isLive(m);
 
+/** Most recent `updated_at` across all matches — i.e. when /api/sync last
+ *  successfully wrote. Returns a human "Synced N min ago" label, or null if
+ *  there's no data yet. Re-renders (60s poll) keep it roughly current. */
+export function syncAgeLabel(matches: Match[], now = Date.now()): string | null {
+  let latest = 0;
+  for (const m of matches) {
+    if (!m.updated_at) continue;
+    // Postgres timestamps come as "2026-06-21 20:30:23.58+00" — normalise to ISO.
+    const iso = m.updated_at.replace(" ", "T").replace(/([+-]\d{2})$/, "$1:00");
+    const t = Date.parse(iso);
+    if (!Number.isNaN(t) && t > latest) latest = t;
+  }
+  if (!latest) return null;
+  const mins = Math.floor((now - latest) / 60_000);
+  if (mins < 1) return "Synced just now";
+  if (mins < 60) return `Synced ${mins} min ago`;
+  const hrs = Math.floor(mins / 60);
+  return `Synced ${hrs} hr${hrs === 1 ? "" : "s"} ago`;
+}
+
 export type Side = { team: string; gf: number; ga: number };
 
 export function sides(m: Match): Side[] {

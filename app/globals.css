@@ -312,6 +312,11 @@ footer {
   color: var(--chalk-dim);
 }
 
+.sync-age {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---- mobile (most traffic) ---- */
 @media (max-width: 480px) {
   main { padding: 28px 12px 48px; }
