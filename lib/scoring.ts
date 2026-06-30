@@ -10,6 +10,10 @@ export type Match = {
   away_team: string | null;
   home_score: number | null;
   away_score: number | null;
+  // Shootout result, knockout only — null when no penalties were taken.
+  // The regular score above stays at the level (e.g. 1-1) end-of-ET score.
+  home_penalty_score: number | null;
+  away_penalty_score: number | null;
   finished: boolean;
   time_elapsed: string | null;
   updated_at: string;
@@ -43,14 +47,33 @@ export function syncAgeLabel(matches: Match[], now = Date.now()): string | null 
   return `Synced ${hrs} hr${hrs === 1 ? "" : "s"} ago`;
 }
 
-export type Side = { team: string; gf: number; ga: number };
+export type Side = { team: string; gf: number; ga: number; pf: number | null; pa: number | null };
 
 export function sides(m: Match): Side[] {
   if (!m.home_team || !m.away_team || m.home_score === null || m.away_score === null) return [];
   return [
-    { team: m.home_team, gf: m.home_score, ga: m.away_score },
-    { team: m.away_team, gf: m.away_score, ga: m.home_score },
+    { team: m.home_team, gf: m.home_score, ga: m.away_score, pf: m.home_penalty_score, pa: m.away_penalty_score },
+    { team: m.away_team, gf: m.away_score, ga: m.home_score, pf: m.away_penalty_score, pa: m.home_penalty_score },
   ];
+}
+
+/** Result of a finished match for one side. A level score is broken by the
+ *  penalty shootout (knockout games); "draw" is only ever returned for a
+ *  genuinely tied game with no shootout — i.e. a group-stage draw. */
+export function sideOutcome(side: Side): "win" | "loss" | "draw" {
+  if (side.gf > side.ga) return "win";
+  if (side.gf < side.ga) return "loss";
+  if (side.pf !== null && side.pa !== null) {
+    if (side.pf > side.pa) return "win";
+    if (side.pf < side.pa) return "loss";
+  }
+  return "draw";
+}
+
+/** True when this side won on penalties after a level score — earns one
+ *  extra goal point on top of the knockout win in the main league. */
+export function wonShootout(side: Side): boolean {
+  return side.gf === side.ga && side.pf !== null && side.pa !== null && side.pf > side.pa;
 }
 
 /** Points one team earned from one match. Live matches count goals
@@ -63,16 +86,17 @@ export function teamMatchPoints(m: Match, team: string): number {
   let pts = side.gf * SCORING.goal;
 
   if (m.finished) {
-    const won = side.gf > side.ga;
-    const drew = side.gf === side.ga;
+    const outcome = sideOutcome(side);
     if (m.stage === "group") {
-      if (won) pts += SCORING.groupWin;
-      else if (drew) pts += SCORING.groupDraw;
-    } else if (won) {
+      if (outcome === "win") pts += SCORING.groupWin;
+      else if (outcome === "draw") pts += SCORING.groupDraw;
+    } else if (outcome === "win") {
       pts += SCORING.knockoutWin[m.stage] ?? 0;
+      // Winning on penalties earns one extra goal point on top of the win.
+      if (wonShootout(side)) pts += SCORING.goal;
     }
-    // Note: knockout draws resolve by pens/extra time; the data source
-    // reports the final score, so the winner check above still applies.
+    // Knockout games never award a draw: a level score is decided by the
+    // shootout (see sideOutcome), so the winner takes the full win points.
     if (side.ga === 0) pts += SCORING.cleanSheet;
   }
   return pts;

@@ -28,6 +28,8 @@ The pages don't link to each other; each league's URL is shared directly.
 
 Win 3, tie 1, goal 1, shutout 1 — flat across all stages. Goals accrue live; win/tie/shutout land at full time. Group-finish bonus: 2 for finishing 1st in the group, 1 for 2nd — awarded only once every match in that group is finished (standings sort by pts, then goal diff, then goals for). See `groupBonuses` in `lib/scoring.ts`.
 
+Knockout games never award tie points: a level score is decided by the shootout. The feed carries the regulation/ET score plus separate `home_penalty_score`/`away_penalty_score` (null outside shootouts); `sideOutcome`/`wonShootout` in `lib/scoring.ts` use them to pick the winner. The main league + BC Boys also give the shootout winner one extra goal point on top of the win (e.g. a 2-2 PK win = 2 goals + 3 win + 1 PK bonus = 6). El Idiots gives a flat 3 for any win, shootout included, with no goal bonus.
+
 ## Env vars (Vercel)
 
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (server-only), `SYNC_SECRET` (optional, gates /api/sync).

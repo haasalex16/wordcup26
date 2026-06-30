@@ -116,7 +116,7 @@ export default function ElIdiots() {
 
       <footer>
         {syncLabel && <><span className="sync-age">{syncLabel}</span> · </>}
-        Scores via worldcup26.ir · win 3 · tie 1 · loss 0 — all stages · ties broken by goals for, then against
+        Scores via worldcup26.ir · win 3 · tie 1 (group only) · loss 0 · knockout ties decided by PKs · ranked by goals for, then against
       </footer>
     </main>
   );
@@ -137,6 +137,9 @@ function MatchRow({ m }: { m: Match }) {
       <span className="team home">{m.home_team ?? "TBD"} {ownedPts(m.home_team)}</span>
       <span className="score">
         {m.home_score ?? "–"}<i>:</i>{m.away_score ?? "–"}
+        {m.home_penalty_score !== null && m.away_penalty_score !== null && (
+          <small>({m.home_penalty_score}:{m.away_penalty_score} pens)</small>
+        )}
         {isLive(m) && <b>{m.time_elapsed}&prime;</b>}
       </span>
       <span className="team away">{ownedPts(m.away_team)} {m.away_team ?? "TBD"}</span>

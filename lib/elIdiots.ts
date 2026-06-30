@@ -3,17 +3,19 @@
 // ============================================================
 //
 // 11 players, 8 teams each ($32 budget). Scoring is simpler than
-// the main league: 3 for a win, 1 for a tie, 0 for a loss — flat
-// across every stage. A shootout win counts as 3 (the feed reports
-// the deciding score, so the winner shows more goals). No goal,
-// clean-sheet, or group-finish bonuses. Tiebreakers for ranking:
+// the main league: 3 for a win, 1 for a tie, 0 for a loss. Ties only
+// exist in the group stage — knockout games are decided by extra time
+// or penalties, so a level score there is settled by the shootout
+// (3 to the winner, 0 to the loser, never a tie). No goal, clean-sheet,
+// or group-finish bonuses (and no main-league shootout goal bonus).
+// Tiebreakers for ranking:
 // 1) total goals scored (more is better), 2) goals against (fewer).
 //
 // Rosters were derived from the draft sheet: a player owns a team if
 // their column held that team's price. Team names are normalised to
 // the feed spelling (must match — verify via /api/teams).
 
-import { type Match, isLive, hasStarted, sides } from "./scoring";
+import { type Match, isLive, hasStarted, sides, sideOutcome } from "./scoring";
 
 export const EL_IDIOTS_NAME = "El Idiots";
 
@@ -34,12 +36,15 @@ export const EI_ROSTERS: Record<string, string[]> = {
 export const EI_SCORING = { win: 3, tie: 1, loss: 0 };
 
 /** Points one team earned from one match: 3 win / 1 tie / 0 loss,
- *  awarded only once the match is finished. Goals never score here. */
+ *  awarded only once the match is finished. Goals never score here.
+ *  A knockout level score is settled by the shootout (sideOutcome), so a
+ *  tie is only ever returned for a genuine group-stage draw. */
 export function eiTeamMatchPoints(m: Match, team: string): number {
   const side = sides(m).find((s) => s.team === team);
   if (!side || !m.finished) return 0;
-  if (side.gf > side.ga) return EI_SCORING.win;
-  if (side.gf === side.ga) return EI_SCORING.tie;
+  const outcome = sideOutcome(side);
+  if (outcome === "win") return EI_SCORING.win;
+  if (outcome === "draw") return EI_SCORING.tie;
   return EI_SCORING.loss;
 }
 

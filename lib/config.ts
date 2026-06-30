@@ -6,7 +6,9 @@
 // Scoring: 3 per win, 1 per tie, 1 per goal, 1 per shutout — every
 // stage, no knockout escalation. Plus group-finish bonus: 2 for
 // finishing 1st in the group, 1 for 2nd (awarded once the group's
-// matches are all finished).
+// matches are all finished). Knockout games never pay a tie: a level
+// score is decided by the shootout, and the shootout winner earns one
+// extra goal point on top of the win (see wonShootout in lib/scoring.ts).
 
 export const LEAGUE_NAME = "World Cup 2026";
 

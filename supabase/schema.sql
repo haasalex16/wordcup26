@@ -10,10 +10,16 @@ create table if not exists matches (
   away_team     text,
   home_score    integer,
   away_score    integer,
+  home_penalty_score integer,            -- knockout shootout only, else null
+  away_penalty_score integer,
   finished      boolean not null default false,
   time_elapsed  text,
   updated_at    timestamptz not null default now()
 );
+
+-- Already-deployed tables: add the shootout columns if missing.
+alter table matches add column if not exists home_penalty_score integer;
+alter table matches add column if not exists away_penalty_score integer;
 
 -- Public site: anyone can read, only the service role (your sync job) can write.
 alter table matches enable row level security;

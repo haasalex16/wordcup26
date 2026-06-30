@@ -149,7 +149,7 @@ export default function BcBoys() {
 
       <footer>
         {syncLabel && <><span className="sync-age">{syncLabel}</span> · </>}
-        Scores via worldcup26.ir · win 3 · tie 1 · goal 1 · shutout 1 · group finish 2/1
+        Scores via worldcup26.ir · win 3 · tie 1 · goal 1 · shutout 1 · group finish 2/1 · PK win +1
       </footer>
     </main>
   );
@@ -170,6 +170,9 @@ function MatchRow({ m }: { m: Match }) {
       <span className="team home">{m.home_team ?? "TBD"} {ownedPts(m.home_team)}</span>
       <span className="score">
         {m.home_score ?? "–"}<i>:</i>{m.away_score ?? "–"}
+        {m.home_penalty_score !== null && m.away_penalty_score !== null && (
+          <small>({m.home_penalty_score}:{m.away_penalty_score} pens)</small>
+        )}
         {isLive(m) && <b>{m.time_elapsed}&prime;</b>}
       </span>
       <span className="team away">{ownedPts(m.away_team)} {m.away_team ?? "TBD"}</span>

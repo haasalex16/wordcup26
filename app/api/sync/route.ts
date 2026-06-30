@@ -18,6 +18,8 @@ type ApiGame = {
   away_team_label?: string;
   home_score: string;
   away_score: string;
+  home_penalty_score?: string; // present only for knockout shootouts
+  away_penalty_score?: string;
   group: string;
   matchday: string;
   local_date: string;
@@ -82,6 +84,8 @@ export async function GET(req: Request) {
     away_team: g.away_team_name_en || g.away_team_label || null,
     home_score: toInt(g.home_score),
     away_score: toInt(g.away_score),
+    home_penalty_score: toInt(g.home_penalty_score),
+    away_penalty_score: toInt(g.away_penalty_score),
     finished: String(g.finished).toUpperCase() === "TRUE",
     time_elapsed: g.time_elapsed ?? null,
     updated_at: new Date().toISOString(),

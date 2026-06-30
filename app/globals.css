@@ -277,6 +277,7 @@ summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
 }
 .match .score i { font-style: normal; color: var(--chalk-dim); }
 .match .score b { font-size: 11px; color: var(--live); margin-left: 4px; }
+.match .score small { font-size: 11px; font-weight: 600; color: var(--gold); margin-left: 4px; }
 
 .gain {
   font-style: normal;
