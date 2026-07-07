@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { flag } from "@/lib/flags";
-import { isLive, syncAgeLabel, type Match } from "@/lib/scoring";
+import { eliminatedTeams, isLive, syncAgeLabel, type Match } from "@/lib/scoring";
 import { EL_IDIOTS_NAME, computeEiLeaderboard, eiTeamMatchPoints } from "@/lib/elIdiots";
 
 const supabase = createClient(
@@ -43,6 +43,7 @@ export default function ElIdiots() {
   }, []);
 
   const leaderboard = useMemo(() => computeEiLeaderboard(matches), [matches]);
+  const out = useMemo(() => eliminatedTeams(matches), [matches]);
   const syncLabel = syncAgeLabel(matches);
   const live = matches.filter(isLive);
   const finished = matches.filter((m) => m.finished).sort((a, b) => b.id - a.id).slice(0, 8);
@@ -74,7 +75,7 @@ export default function ElIdiots() {
                       <span className="name">{p.player}</span>
                       <span className="flags" aria-hidden="true">
                         {p.teams.map((t) => (
-                          <span key={t.team} title={t.team}>{flag(t.team)}</span>
+                          <span key={t.team} title={t.team} className={out.has(t.team) ? "out" : undefined}>{flag(t.team)}</span>
                         ))}
                       </span>
                       {p.teams.some((t) => t.live) && <span className="dot" title="A drafted team is playing now" />}
@@ -84,7 +85,7 @@ export default function ElIdiots() {
                     <ul className="squad">
                       {p.teams.map((t) => (
                         <li key={t.team}>
-                          <span><span className="flag" aria-hidden="true">{flag(t.team)}</span> {t.team}</span>
+                          <span className={out.has(t.team) ? "team-out" : undefined}><span className="flag" aria-hidden="true">{flag(t.team)}</span> {t.team}</span>
                           <span className="meta">
                             {t.played} played · {t.gf}:{t.ga}{t.live ? " · live" : ""}
                           </span>

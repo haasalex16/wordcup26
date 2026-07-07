@@ -136,6 +136,15 @@ summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
 }
 .squad .flag { font-size: 15px; margin-right: 2px; }
 
+/* Knocked-out teams: drain the flag's colour and dim the row so a glance
+   at the squad shows who's still alive. */
+.flags .out { filter: grayscale(1); opacity: 0.4; }
+.team-out { opacity: 0.5; }
+.team-out .flag { filter: grayscale(1); }
+/* BC Boys group-battle rows for a knocked-out team. */
+.group-card .row-out { opacity: 0.5; }
+.group-card .row-out .gflag { filter: grayscale(1); }
+
 .pts {
   font-family: "Oswald", sans-serif;
   font-weight: 700;

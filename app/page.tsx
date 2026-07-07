@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { LEAGUE_NAME } from "@/lib/config";
 import { flag } from "@/lib/flags";
-import { computeLeaderboard, isLive, syncAgeLabel, teamMatchPoints, type Match } from "@/lib/scoring";
+import { computeLeaderboard, eliminatedTeams, isLive, syncAgeLabel, teamMatchPoints, type Match } from "@/lib/scoring";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -43,6 +43,7 @@ export default function Home() {
   }, []);
 
   const leaderboard = useMemo(() => computeLeaderboard(matches), [matches]);
+  const out = useMemo(() => eliminatedTeams(matches), [matches]);
   const syncLabel = syncAgeLabel(matches);
   const live = matches.filter(isLive);
   const finished = matches.filter((m) => m.finished).sort((a, b) => b.id - a.id).slice(0, 8);
@@ -74,7 +75,7 @@ export default function Home() {
                       <span className="name">{p.player}</span>
                       <span className="flags" aria-hidden="true">
                         {p.teams.map((t) => (
-                          <span key={t.team} title={t.team}>{flag(t.team)}</span>
+                          <span key={t.team} title={t.team} className={out.has(t.team) ? "out" : undefined}>{flag(t.team)}</span>
                         ))}
                       </span>
                       {p.teams.some((t) => t.live) && <span className="dot" title="A drafted team is playing now" />}
@@ -83,7 +84,7 @@ export default function Home() {
                     <ul className="squad">
                       {p.teams.map((t) => (
                         <li key={t.team}>
-                          <span><span className="flag" aria-hidden="true">{flag(t.team)}</span> {t.team}</span>
+                          <span className={out.has(t.team) ? "team-out" : undefined}><span className="flag" aria-hidden="true">{flag(t.team)}</span> {t.team}</span>
                           <span className="meta">{t.played} played{t.live ? " · live" : ""}</span>
                           <span className="pts small">{t.points}</span>
                         </li>

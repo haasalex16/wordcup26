@@ -141,6 +141,44 @@ export function groupBonuses(matches: Match[]): Map<string, number> {
   return bonus;
 }
 
+const KNOCKOUT_STAGES = new Set(["r32", "r16", "qf", "sf", "third", "final"]);
+
+/** Teams that are out of the tournament. Two signals, both read straight
+ *  from the feed so we never reimplement FIFA's best-third-place math:
+ *   1. Lost a finished knockout match (a level score is settled on penalties).
+ *   2. Group stage complete + the knockout bracket populated, yet the team
+ *      isn't in it — i.e. the feed advanced someone else. */
+export function eliminatedTeams(matches: Match[]): Set<string> {
+  const out = new Set<string>();
+
+  for (const m of matches) {
+    if (!m.finished || !KNOCKOUT_STAGES.has(m.stage)) continue;
+    for (const s of sides(m)) {
+      if (sideOutcome(s) === "loss") out.add(s.team);
+    }
+  }
+
+  const groupMatches = matches.filter((m) => m.stage === "group");
+  const groupsDone = groupMatches.length > 0 && groupMatches.every((m) => m.finished);
+
+  const advanced = new Set<string>();
+  for (const m of matches) {
+    if (!KNOCKOUT_STAGES.has(m.stage)) continue;
+    if (m.home_team) advanced.add(m.home_team);
+    if (m.away_team) advanced.add(m.away_team);
+  }
+
+  if (groupsDone && advanced.size > 0) {
+    for (const m of groupMatches) {
+      for (const t of [m.home_team, m.away_team]) {
+        if (t && !advanced.has(t)) out.add(t);
+      }
+    }
+  }
+
+  return out;
+}
+
 export type TeamLine = { team: string; points: number; played: number; live: boolean };
 export type PlayerLine = { player: string; points: number; teams: TeamLine[] };
 

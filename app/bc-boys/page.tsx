@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { flag } from "@/lib/flags";
-import { computeLeaderboard, isLive, syncAgeLabel, teamMatchPoints, type Match } from "@/lib/scoring";
+import { computeLeaderboard, eliminatedTeams, isLive, syncAgeLabel, teamMatchPoints, type Match } from "@/lib/scoring";
 import {
   BC_BOYS_LEAGUE_NAME,
   BC_BOYS_ROSTERS,
@@ -49,6 +49,7 @@ export default function BcBoys() {
 
   const leaderboard = useMemo(() => computeLeaderboard(matches, BC_BOYS_ROSTERS), [matches]);
   const battles = useMemo(() => computeGroupBattles(leaderboard, matches), [leaderboard, matches]);
+  const out = useMemo(() => eliminatedTeams(matches), [matches]);
   const syncLabel = syncAgeLabel(matches);
   const live = matches.filter(isLive);
   const finished = matches.filter((m) => m.finished).sort((a, b) => b.id - a.id).slice(0, 8);
@@ -81,7 +82,7 @@ export default function BcBoys() {
                       <span className="name">{p.player}</span>
                       <span className="flags" aria-hidden="true">
                         {p.teams.map((t) => (
-                          <span key={t.team} title={t.team}>{flag(t.team)}</span>
+                          <span key={t.team} title={t.team} className={out.has(t.team) ? "out" : undefined}>{flag(t.team)}</span>
                         ))}
                       </span>
                       {p.teams.some((t) => t.live) && <span className="dot" title="A drafted team is playing now" />}
@@ -90,7 +91,7 @@ export default function BcBoys() {
                     <ul className="squad">
                       {p.teams.map((t) => (
                         <li key={t.team}>
-                          <span><span className="flag" aria-hidden="true">{flag(t.team)}</span> {t.team}</span>
+                          <span className={out.has(t.team) ? "team-out" : undefined}><span className="flag" aria-hidden="true">{flag(t.team)}</span> {t.team}</span>
                           <span className="meta">{t.played} played{t.live ? " · live" : ""}</span>
                           <span className="pts small">{t.points}</span>
                         </li>
@@ -113,7 +114,7 @@ export default function BcBoys() {
                     {b.rows.map((r, idx) => {
                       const leading = b.leaders.includes(r.owner) && r.points > 0;
                       return (
-                        <li key={r.team} className={leading ? "leading" : undefined}>
+                        <li key={r.team} className={[leading ? "leading" : "", out.has(r.team) ? "row-out" : ""].filter(Boolean).join(" ") || undefined}>
                           <span className="pos">{leading ? "👑" : idx + 1}</span>
                           <span className="gflag" aria-hidden="true">{flag(r.team)}</span>
                           <span className="gteam">
